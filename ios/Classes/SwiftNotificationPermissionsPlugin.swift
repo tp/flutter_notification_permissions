@@ -82,10 +82,21 @@ public class SwiftNotificationPermissionsPlugin: NSObject, FlutterPlugin {
   }
 
   func getNotificationStatus(completion: @escaping ((String) -> Void)) {
-      if #available(iOS 10.0, *) {
+      if #available(iOS 12.0, *) {
+        let current = UNUserNotificationCenter.current()
+           current.getNotificationSettings(completionHandler: { settings in
+               if settings.authorizationStatus == .notDetermined || settings.authorizationStatus == .provisional {
+                   completion(self.permissionUnknown)
+               } else if settings.authorizationStatus == .denied {
+                   completion(self.permissionDenied)
+               } else if settings.authorizationStatus == .authorized {
+                   completion(self.permissionGranted)
+               }
+           })
+      } else if #available(iOS 10.0, *) {
           let current = UNUserNotificationCenter.current()
           current.getNotificationSettings(completionHandler: { settings in
-              if settings.authorizationStatus == .notDetermined || (#available(iOS 12.0, *) && settings.authorizationStatus == .provisional) {
+              if settings.authorizationStatus == .notDetermined {
                   completion(self.permissionUnknown)
               } else if settings.authorizationStatus == .denied {
                   completion(self.permissionDenied)
