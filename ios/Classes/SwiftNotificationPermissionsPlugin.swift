@@ -85,7 +85,7 @@ public class SwiftNotificationPermissionsPlugin: NSObject, FlutterPlugin {
       if #available(iOS 10.0, *) {
           let current = UNUserNotificationCenter.current()
           current.getNotificationSettings(completionHandler: { settings in
-              if settings.authorizationStatus == .notDetermined {
+              if settings.authorizationStatus == .notDetermined || settings.authorizationStatus == .provisional {
                   completion(self.permissionUnknown)
               } else if settings.authorizationStatus == .denied {
                   completion(self.permissionDenied)
